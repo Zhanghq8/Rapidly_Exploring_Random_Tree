@@ -38,6 +38,30 @@ void RRT::RRT::setrandompointsize(float randompoint_size_)
 	randompoint_size = randompoint_size_;
 }
 
+void RRT::RRT::addobstacle(Rectobstacle obstacle_)
+{
+	Obstacleset.push_back(obstacle_);
+}
+
+bool RRT::RRT::isInObstacle(const Vec2i& coordinates_)
+{
+	if (Obstacleset.size() == 0)
+	{
+		return false;
+	}
+	for (int i=0; i<Obstacleset.size(); i++)
+	{
+		if (coordinates_.x >= Obstacleset[i].topleftx
+			&& coordinates_.x <= Obstacleset[i].topleftx + Obstacleset[i].width
+			&& coordinates_.y >= Obstacleset[i].toplefty - Obstacleset[i].height
+			&& coordinates_.y <= Obstacleset[i].toplefty)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 bool RRT::RRT::isGoal(Vec2i source_, Vec2i goal_) // check if the coordinate is at goal pos
 {
 	float distance = euclidean_dis(source_, goal_);
@@ -50,7 +74,9 @@ bool RRT::RRT::isGoal(Vec2i source_, Vec2i goal_) // check if the coordinate is 
 
 bool RRT::RRT::isValid(Vec2i coordinates_, Vec2i closestvertex_) // check if the coordinate is valid
 {
-	if (coordinates_.x > 0 && coordinates_.y > 0 && closestvertex_.x < map_width && closestvertex_.y < map_height)
+	if (coordinates_.x > 0 && coordinates_.y > 0 
+		&& closestvertex_.x < map_width 
+		&& closestvertex_.y < map_height && isInObstacle(coordinates_) == false && isInObstacle(closestvertex_) == false)
 	{
 		return true;
 	}
@@ -68,12 +94,13 @@ RRT::Vec2i RRT::RRT::GenerateRandomPoint(Vec2i goal_)
 	Vec2i randompoint;
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_real_distribution<> x(0, randompoint_size);
-	std::uniform_real_distribution<> y(0, randompoint_size);
+	std::uniform_real_distribution<> x(0, map_width);
+	std::uniform_real_distribution<> y(0, map_height);
 
 	randompoint.x = x(gen);
 	randompoint.y = y(gen);
-
+	// std::cout << "randomx: " << randompoint.x << std::endl;
+	// std::cout << "randomy: " << randompoint.y << std::endl;
 	bool setgoal = (rand() % 100 + 1) <= 7;
 	if (setgoal == true )
 	{
@@ -99,10 +126,10 @@ RRT::Vertex* RRT::RRT::getClosestVertex(std::set<Vertex*>& Vertices_, Vec2i rand
 bool RRT::RRT::movetorandom(Vertex* closestvertex_, Vec2i randompoint_)
 {
 	float theta = atan2(randompoint_.y - closestvertex_->coordinates.y, randompoint_.x - closestvertex_->coordinates.x);
+	// std::cout << "theta: " << theta << std::endl;
 	Vec2i vertextemp;
 	vertextemp.x = closestvertex_->coordinates.x + step_size * cos(theta);
 	vertextemp.y = closestvertex_->coordinates.y + step_size * sin(theta);
-	std::cout << "vertextemp: " << vertextemp.x << " " << vertextemp.y << std::endl;
 	if (isValid(vertextemp, closestvertex_->coordinates) == true) 
 	{	
 		Vertex* newvertex = new Vertex(vertextemp, closestvertex_);
@@ -115,19 +142,15 @@ bool RRT::RRT::movetorandom(Vertex* closestvertex_, Vec2i randompoint_)
 
 void RRT::RRT::findPath(Vec2i source_, Vec2i goal_)
 {	
-	lastvertex = NULL;
 	bool done_flag = false;
 	VertexSet.insert(new Vertex(source_));
 	current = *VertexSet.begin();
-	// std::cout << "path root " << current->parent << std::endl;
 	int current_iterations = 0;
 	while (done_flag != true && current_iterations <= max_iterations) 
 	{	
-		std::cout << current_iterations << std::endl;
+		// std::cout << current_iterations << std::endl;
 		Vec2i randompoint = GenerateRandomPoint(goal_);
-		// std::cout << "random point " << randompoint.x << std::endl;
 		Vertex* closestv= getClosestVertex(VertexSet, randompoint);
-		std::cout << "MOVE" << movetorandom(closestv, randompoint) << std::endl;
 		if (movetorandom(closestv, randompoint) == true)
 		{
 			current_iterations++;
@@ -136,12 +159,15 @@ void RRT::RRT::findPath(Vec2i source_, Vec2i goal_)
 				done_flag = true;
 				Vertex* goalvertex = new Vertex(goal_, current);
 				current = goalvertex;
-				std::cout << "Found a path." << std::endl;
+				std::cout << "Found a path ";
 			}
 		}
 		if (current_iterations == max_iterations)
 		{
 			std::cout << "No path found." << std::endl;
+			current = NULL;
+			releaseVertices(VertexSet);
+			return;
 		}
 	}
 	
@@ -153,7 +179,7 @@ void RRT::RRT::findPath(Vec2i source_, Vec2i goal_)
 	reverse(path.begin(), path.end());
 	if (!path.empty()) 
 	{
-		std::cout << "path size" <<  path.size() << std::endl;
+		std::cout << "with " <<  path.size() << " vertices. " << std::endl;
 		for (auto ele:path)
 		{
 			std::cout << "[" << ele.x << "," << ele.y << "] "; 
@@ -175,16 +201,20 @@ void RRT::RRT::releaseVertices(std::set<Vertex*>& Vertices_)
 int main()
 {
 	RRT::RRT temp;
-	temp.setmap(30.0, 30.0);
-	temp.setstepsize(3.0);
+	temp.setmap(50, 50);
+	temp.setstepsize(2.0);
 	temp.setgoalbias(0.07);
 	temp.setrandompointsize(5.0);
 	temp.setgoalradius(1.0);
-	temp.setmaxiterations(10000);
+	temp.setmaxiterations(1000);
 	RRT::Vec2i start, goal;
 	start.x = 10.0;
 	start.y = 10.0;
-	goal.x = 25.0;
-	goal.y = 25.0;
+	goal.x = 35.0;
+	goal.y = 35.0;
+	RRT::Rectobstacle obstacle1{5,30,15,30};
+	temp.addobstacle(obstacle1);
+	// std::cout << "obstacle: " << temp.Obstacleset[0].topleftx << " " << temp.Obstacleset[0].toplefty << std::endl;
+
 	temp.findPath(start, goal);
 }
