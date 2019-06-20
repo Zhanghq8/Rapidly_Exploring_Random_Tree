@@ -43,6 +43,7 @@ void RRT::RRT::addobstacle(Rectobstacle obstacle_)
 	Obstacleset.push_back(obstacle_);
 }
 
+// check if the coordinate is in all the rectangular obstacles
 bool RRT::RRT::isInObstacle(const Vec2i& coordinates_)
 {
 	if (Obstacleset.size() == 0)
@@ -62,7 +63,8 @@ bool RRT::RRT::isInObstacle(const Vec2i& coordinates_)
 	return false;
 }
 
-bool RRT::RRT::isGoal(Vec2i source_, Vec2i goal_) // check if the coordinate is at goal pos
+// check if the coordinate is at goal pos
+bool RRT::RRT::isGoal(Vec2i source_, Vec2i goal_) 
 {
 	float distance = euclidean_dis(source_, goal_);
 	if (distance <= goal_radius) 
@@ -72,7 +74,9 @@ bool RRT::RRT::isGoal(Vec2i source_, Vec2i goal_) // check if the coordinate is 
 	return false;
 }
 
-bool RRT::RRT::isValid(Vec2i coordinates_, Vec2i closestvertex_) // check if the coordinate is valid
+// check if the coordinate is valid
+
+bool RRT::RRT::isValid(Vec2i coordinates_, Vec2i closestvertex_) 
 {
 	if (coordinates_.x > 0 && coordinates_.y > 0 
 		&& closestvertex_.x < map_width 
@@ -83,12 +87,14 @@ bool RRT::RRT::isValid(Vec2i coordinates_, Vec2i closestvertex_) // check if the
 	return false;
 }
 
-float RRT::RRT::euclidean_dis(Vec2i source_, Vec2i goal_) // calculate the euclidean distance from current to goal
+// calculate the euclidean distance from current to goal
+float RRT::RRT::euclidean_dis(Vec2i source_, Vec2i goal_) 
 {
 	float e_distance = sqrt(pow(source_.x - goal_.x, 2) + pow(source_.y - goal_.y, 2));
 	return e_distance; 
 }
 
+//generate new randompoint with goal_bias% probability to pick goal point 
 RRT::Vec2i RRT::RRT::GenerateRandomPoint(Vec2i goal_)
 {
 	Vec2i randompoint;
@@ -101,7 +107,7 @@ RRT::Vec2i RRT::RRT::GenerateRandomPoint(Vec2i goal_)
 	randompoint.y = y(gen);
 	// std::cout << "randomx: " << randompoint.x << std::endl;
 	// std::cout << "randomy: " << randompoint.y << std::endl;
-	bool setgoal = (rand() % 100 + 1) <= 7;
+	bool setgoal = (rand() % 100 + 1) <= goal_bias;
 	if (setgoal == true )
 	{
 		return goal_;
@@ -123,6 +129,8 @@ RRT::Vertex* RRT::RRT::getClosestVertex(std::set<Vertex*>& Vertices_, Vec2i rand
 
 }
 
+//generate new point along the line contain closestvertex and randompoint
+//check if the new point is valid 
 bool RRT::RRT::movetorandom(Vertex* closestvertex_, Vec2i randompoint_)
 {
 	float theta = atan2(randompoint_.y - closestvertex_->coordinates.y, randompoint_.x - closestvertex_->coordinates.x);
