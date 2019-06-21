@@ -126,7 +126,6 @@ RRT::Vertex* RRT::RRT::getClosestVertex(std::set<Vertex*>& Vertices_, Vec2i rand
 		}
 	}
 	return closestvertex;
-
 }
 
 //generate new point along the line contain closestvertex and randompoint
@@ -154,7 +153,7 @@ void RRT::RRT::findPath(Vec2i source_, Vec2i goal_)
 	VertexSet.insert(new Vertex(source_));
 	current = *VertexSet.begin();
 	int current_iterations = 0;
-	while (done_flag != true && current_iterations <= max_iterations) 
+	while (done_flag != true && current_iterations < max_iterations) 
 	{	
 		// std::cout << current_iterations << std::endl;
 		Vec2i randompoint = GenerateRandomPoint(goal_);
