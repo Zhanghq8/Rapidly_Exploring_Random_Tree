@@ -62,7 +62,7 @@ namespace RRT
 		float euclidean_dis(Vec2i source_, Vec2i goal_); // calculate the euclidean distance from current to goal
 		Vec2i GenerateRandomPoint(Vec2i goal_); 
 		Vertex* getClosestVertex(std::set<Vertex*>& Vertices_, Vec2i randompoint_);
-		bool movetorandom(Vertex* closertvertex_, Vec2i randompoint_);
+		bool extend(Vertex* closertvertex_, Vec2i randompoint_);
 		void findPath(Vec2i source_, Vec2i goal_);
 		void releaseVertices(std::set<Vertex*>& Vertices_);
 

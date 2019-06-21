@@ -131,7 +131,7 @@ RRT::Vertex* RRT::RRT::getClosestVertex(std::set<Vertex*>& Vertices_, Vec2i rand
 
 //generate new point along the line contain closestvertex and randompoint
 //check if the new point is valid 
-bool RRT::RRT::movetorandom(Vertex* closestvertex_, Vec2i randompoint_)
+bool RRT::RRT::extend(Vertex* closestvertex_, Vec2i randompoint_)
 {
 	float theta = atan2(randompoint_.y - closestvertex_->coordinates.y, randompoint_.x - closestvertex_->coordinates.x);
 	// std::cout << "theta: " << theta << std::endl;
@@ -159,7 +159,7 @@ void RRT::RRT::findPath(Vec2i source_, Vec2i goal_)
 		// std::cout << current_iterations << std::endl;
 		Vec2i randompoint = GenerateRandomPoint(goal_);
 		Vertex* closestv= getClosestVertex(VertexSet, randompoint);
-		if (movetorandom(closestv, randompoint) == true)
+		if (extend(closestv, randompoint) == true)
 		{
 			current_iterations++;
 			if (isGoal(current->coordinates, goal_) == true)
