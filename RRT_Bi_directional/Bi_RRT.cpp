@@ -103,8 +103,8 @@ bool RRT::Bi_RRT::isInObstacle(const Vec2i& coordinates_)
 	{
 		if (coordinates_.x >= Obstacleset[i].bottomleftx
 			&& coordinates_.x <= Obstacleset[i].bottomleftx + Obstacleset[i].width
-			&& coordinates_.y >= Obstacleset[i].bottomlefty - Obstacleset[i].height
-			&& coordinates_.y <= Obstacleset[i].bottomlefty)
+			&& coordinates_.y >= Obstacleset[i].bottomlefty 
+			&& coordinates_.y <= Obstacleset[i].bottomlefty + Obstacleset[i].height)
 		{
 			return true;
 		}
