@@ -158,6 +158,7 @@ void RRT::RRT::findPath(Vec2i source_, Vec2i goal_)
 		// std::cout << current_iterations << std::endl;
 		Vec2i randompoint = GenerateRandomPoint(goal_);
 		Vertex* closestv= getClosestVertex(VertexSet, randompoint);
+		
 		if (extend(closestv, randompoint) == true)
 		{
 			current_iterations++;
@@ -184,20 +185,24 @@ void RRT::RRT::findPath(Vec2i source_, Vec2i goal_)
 		current = current->parent;
 	}
 	reverse(path.begin(), path.end());
+	float final_cost = 0;
 	if (!path.empty()) 
 	{
 		std::cout << "with " <<  path.size() << " vertices. " << std::endl;
-		for (auto ele:path)
+		for (int i=1; i<path.size()-1; i++)
 		{
-			std::cout << "[" << ele.x << "," << ele.y << "] "; 
+			std::cout << "[" << path[i].x << "," << path[i].y << "] ";
+			final_cost += euclidean_dis(path[i], path[i-1]); 
 		}
 		std::cout << "\n";
 	}
+	std::cout << "Final cost: " << final_cost << std::endl;
 	releaseVertices(VertexSet);
 }
 
 void RRT::RRT::releaseVertices(std::set<Vertex*>& Vertices_)
-{
+{	
+	std::cout << "Visited vertices: " << Vertices_.size() << std::endl;
 	for (auto it = Vertices_.begin(); it != Vertices_.end();) 
 	{
 		delete *it;
@@ -217,10 +222,10 @@ int main()
 	RRT::Vec2i start, goal;
 	start.x = 10.0;
 	start.y = 10.0;
-	goal.x = 35.0;
-	goal.y = 35.0;
-	RRT::Rectobstacle obstacle1{5,30,15,30};
-	temp.addobstacle(obstacle1);
+	goal.x = 20.0;
+	goal.y = 20.0;
+	// RRT::Rectobstacle obstacle1{5,30,15,30};
+	// temp.addobstacle(obstacle1);
 	// std::cout << "obstacle: " << temp.Obstacleset[0].topleftx << " " << temp.Obstacleset[0].toplefty << std::endl;
 
 	temp.findPath(start, goal);
