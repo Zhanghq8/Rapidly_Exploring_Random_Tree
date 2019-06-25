@@ -43,6 +43,48 @@ void RRT::RRT::addobstacle(Rectobstacle obstacle_)
 	Obstacleset.push_back(obstacle_);
 }
 
+bool RRT::RRT::isHit(Vec2i coordinates1_, Vec2i coordinates2_)
+{	
+	if (Obstacleset.size() == 0)
+	{
+		return false;
+	}
+	for (int i=0; i<Obstacleset.size(); i++)
+	{	
+		Vec2i bottomleft = {Obstacleset[i].bottomleftx, Obstacleset[i].bottomlefty};
+		Vec2i bottomright = {Obstacleset[i].bottomleftx + Obstacleset[i].width, Obstacleset[i].bottomlefty};
+		Vec2i topleft = {Obstacleset[i].bottomleftx, Obstacleset[i].bottomlefty + Obstacleset[i].height};
+		Vec2i topright = {Obstacleset[i].bottomleftx + Obstacleset[i].width, Obstacleset[i].bottomlefty + Obstacleset[i].height};
+		bool top = islineinsect(coordinates1_, coordinates2_, topleft, topright);
+		bool bottom = islineinsect(coordinates1_, coordinates2_, bottomleft, bottomright);
+		bool left = islineinsect(coordinates1_, coordinates2_, topleft, bottomleft);
+		bool right = islineinsect(coordinates1_, coordinates2_, topright, bottomright);
+		if (top || bottom || left || right)
+		{
+			return true;
+		}
+		return false;
+	}
+}
+
+bool RRT::RRT::islineinsect(Vec2i line1p1_, Vec2i line1p2_, Vec2i line2p1_, Vec2i line2p2_)
+{
+	// calculate the distance to intersection point
+	float uA = ((line2p2_.x-line2p1_.x)*(line1p1_.y-line2p1_.y) - (line2p2_.y-line2p1_.y)*
+		(line1p1_.x-line2p1_.x)) / ((line2p2_.y-line2p1_.y)*(line1p2_.x-line1p1_.x) - 
+		(line2p2_.x-line2p1_.x)*(line1p2_.y-line1p1_.y));
+	float uB = ((line1p2_.x-line1p1_.x)*(line1p1_.y-line2p1_.y) - (line1p2_.y-line1p1_.y)*
+		(line1p1_.x-line2p1_.x)) / ((line2p2_.y-line2p1_.y)*(line1p2_.x-line1p1_.x) - 
+		(line2p2_.x-line2p1_.x)*(line1p2_.y-line1p1_.y));
+
+	// if uA and uB are between 0-1, lines are colliding
+	if (uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1) 
+	{
+		return true;
+  	}
+  	return false;
+}
+
 // check if the coordinate is in all the rectangular obstacles
 bool RRT::RRT::isInObstacle(const Vec2i& coordinates_)
 {
@@ -52,10 +94,10 @@ bool RRT::RRT::isInObstacle(const Vec2i& coordinates_)
 	}
 	for (int i=0; i<Obstacleset.size(); i++)
 	{
-		if (coordinates_.x >= Obstacleset[i].topleftx
-			&& coordinates_.x <= Obstacleset[i].topleftx + Obstacleset[i].width
-			&& coordinates_.y >= Obstacleset[i].toplefty - Obstacleset[i].height
-			&& coordinates_.y <= Obstacleset[i].toplefty)
+		if (coordinates_.x >= Obstacleset[i].bottomleftx
+			&& coordinates_.x <= Obstacleset[i].bottomleftx + Obstacleset[i].width
+			&& coordinates_.y >= Obstacleset[i].bottomlefty - Obstacleset[i].height
+			&& coordinates_.y <= Obstacleset[i].bottomlefty)
 		{
 			return true;
 		}
@@ -79,8 +121,9 @@ bool RRT::RRT::isGoal(Vec2i source_, Vec2i goal_)
 bool RRT::RRT::isValid(Vec2i coordinates_, Vec2i closestvertex_) 
 {
 	if (coordinates_.x > 0 && coordinates_.y > 0 
-		&& closestvertex_.x < map_width 
-		&& closestvertex_.y < map_height && isInObstacle(coordinates_) == false && isInObstacle(closestvertex_) == false)
+		&& closestvertex_.x < map_width && closestvertex_.y < map_height 
+		&& isInObstacle(coordinates_) == false && isInObstacle(closestvertex_) == false
+		&& isHit(coordinates_, closestvertex_) == false)
 	{
 		return true;
 	}
@@ -158,7 +201,6 @@ void RRT::RRT::findPath(Vec2i source_, Vec2i goal_)
 		// std::cout << current_iterations << std::endl;
 		Vec2i randompoint = GenerateRandomPoint(goal_);
 		Vertex* closestv= getClosestVertex(VertexSet, randompoint);
-		
 		if (extend(closestv, randompoint) == true)
 		{
 			current_iterations++;
@@ -189,7 +231,8 @@ void RRT::RRT::findPath(Vec2i source_, Vec2i goal_)
 	if (!path.empty()) 
 	{
 		std::cout << "with " <<  path.size() << " vertices. " << std::endl;
-		for (int i=1; i<path.size()-1; i++)
+		std::cout << "[" << path[0].x << "," << path[0].y << "] ";
+		for (int i=1; i<path.size(); i++)
 		{
 			std::cout << "[" << path[i].x << "," << path[i].y << "] ";
 			final_cost += euclidean_dis(path[i], path[i-1]); 
@@ -214,18 +257,18 @@ int main()
 {
 	RRT::RRT temp;
 	temp.setmap(50, 50);
-	temp.setstepsize(2.0);
+	temp.setstepsize(3.0);
 	temp.setgoalbias(0.07);
 	temp.setrandompointsize(5.0);
 	temp.setgoalradius(1.0);
-	temp.setmaxiterations(1000);
+	temp.setmaxiterations(10000);
 	RRT::Vec2i start, goal;
 	start.x = 10.0;
 	start.y = 10.0;
-	goal.x = 20.0;
-	goal.y = 20.0;
-	// RRT::Rectobstacle obstacle1{5,30,15,30};
-	// temp.addobstacle(obstacle1);
+	goal.x = 30.0;
+	goal.y = 30.0;
+	RRT::Rectobstacle obstacle1{10,10,15,20};
+	temp.addobstacle(obstacle1);
 	// std::cout << "obstacle: " << temp.Obstacleset[0].topleftx << " " << temp.Obstacleset[0].toplefty << std::endl;
 
 	temp.findPath(start, goal);

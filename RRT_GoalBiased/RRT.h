@@ -28,8 +28,8 @@ namespace RRT
 	{
 		float width;
 		float height;
-		float topleftx;
-		float toplefty; // coordinate of topleft point
+		float bottomleftx;
+		float bottomlefty; // coordinate of topleft point
 	};
 
 	class RRT
@@ -57,6 +57,8 @@ namespace RRT
 		void setgoalradius(float goal_radius_);
 		void setrandompointsize(float randompoint_size_);
 		bool isInObstacle(const Vec2i& coordinates_);
+		bool isHit(Vec2i coordinates1_, Vec2i coordinates2_);
+		bool islineinsect(Vec2i line1p1, Vec2i line1p2, Vec2i line2p1, Vec2i line2p2);
 		bool isGoal(Vec2i source_, Vec2i goal_); // check if the coordinate is at goal pos
 		bool isValid(Vec2i coordinates_, Vec2i closestvertex_); // check if the coordinate is valid
 		float euclidean_dis(Vec2i source_, Vec2i goal_); // calculate the euclidean distance from current to goal
