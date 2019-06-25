@@ -276,9 +276,55 @@ void RRT::Bi_RRT::findPath(Vec2i source_, Vec2i goal_)
 		}
 		std::cout << "\n";
 	}
-	std::cout << "Final cost: " << final_cost << std::endl;
+	std::cout << "Final cost(without smooth): " << final_cost << std::endl;
+
+	smoothpath(goal_);
+	float final_cost_s = 0;
+	if (!smooth_path.empty()) 
+	{
+		std::cout << "After smooth, find " <<  smooth_path.size() << " vertices. " << std::endl;
+		std::cout << "[" << smooth_path[0].x << "," << smooth_path[0].y << "] ";
+		for (int i=1; i<smooth_path.size(); i++)
+		{
+			std::cout << "[" << smooth_path[i].x << "," << smooth_path[i].y << "] ";
+			final_cost_s += euclidean_dis(smooth_path[i], smooth_path[i-1]); 
+		}
+		std::cout << "\n";
+	}
+	std::cout << "Final cost(after smooth): " << final_cost_s << std::endl;
 	releaseVertices(VertexSetA);
 	releaseVertices(VertexSetB);
+}
+
+void RRT::Bi_RRT::smoothpath(Vec2i goal_)
+{	
+	if (path.size() <= 2) {
+		smooth_path = path;
+		return;
+	}
+	smooth_path.push_back(path[0]);
+	int index1 = 0;
+	int index2 = 1;
+	while (index1 <= path.size() && index2 <= path.size())
+	{
+		if (isValid(path[index1], path[index2]) == true)
+		{
+			index2++;
+		}
+		else
+		{	
+			if (index2 - 1 != 0)
+			{
+				smooth_path.push_back(path[index2-1]);
+			}
+			index1 = index2;
+			index2 = index1 + 1;
+		}
+	}
+	if (smooth_path.back().x != goal_.x && smooth_path.back().y != goal_.y)
+	{
+		smooth_path.push_back(path.back());
+	}
 }
 
 void RRT::Bi_RRT::releaseVertices(std::set<Vertex*>& Vertices_)

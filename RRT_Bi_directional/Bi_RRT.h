@@ -47,6 +47,7 @@ namespace RRT
 		Vertex* current_A; // keep track of current vertex of tree A
 		Vertex* current_B; // keep track of current vertex of tree B
 		std::vector<Vec2i> path; // store the coordinate of the path
+		std::vector<Vec2i> smooth_path; // store the coordinate of the path after smoothed
 		std::vector<Rectobstacle> Obstacleset; 
 		std::set<Vertex*> VertexSetA; // store all the vertice visited for tree A
 		std::set<Vertex*> VertexSetB; // store all the vertice visited for tree B
@@ -61,6 +62,7 @@ namespace RRT
 		bool isHit(Vec2i coordinates1_, Vec2i coordinates2_);
 		bool islineinsect(Vec2i line1p1, Vec2i line1p2, Vec2i line2p1, Vec2i line2p2);
 		void setsearchflag(); // if set true, search tree A first
+		void smoothpath(Vec2i goal_);
 		void setrandompointsize(float randompoint_size_);
 		bool isInObstacle(const Vec2i& coordinates_);
 		bool isGoal(Vec2i source_, Vec2i goal_); // check if the coordinate is at goal pos
