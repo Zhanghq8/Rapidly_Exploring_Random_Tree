@@ -1,5 +1,5 @@
-#ifndef _RRT_H_
-#define _RRT_H_
+#ifndef _RRTSTAR_H_
+#define _RRTSTAR_H_
 
 #include <vector>
 #include <math.h>

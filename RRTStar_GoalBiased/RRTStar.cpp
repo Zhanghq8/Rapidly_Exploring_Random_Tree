@@ -1,4 +1,4 @@
-#include "RRT.h"
+#include "RRTStar.h"
 
 
 RRT::Vertex::Vertex(Vec2i coordinates_, Vertex *parent_, float cost_)
