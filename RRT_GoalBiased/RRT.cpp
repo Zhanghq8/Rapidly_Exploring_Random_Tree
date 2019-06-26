@@ -45,26 +45,30 @@ void RRT::RRT::addobstacle(Rectobstacle obstacle_)
 
 bool RRT::RRT::isHit(Vec2i coordinates1_, Vec2i coordinates2_)
 {	
+	// std::cout << "Found " << Obstacleset.size() << " obstacle. " << std::endl;
 	if (Obstacleset.size() == 0)
 	{
 		return false;
 	}
 	for (int i=0; i<Obstacleset.size(); i++)
 	{	
+		// std::cout << "Obstacle index: " << i << std::endl;	
 		Vec2i bottomleft = {Obstacleset[i].bottomleftx, Obstacleset[i].bottomlefty};
 		Vec2i bottomright = {Obstacleset[i].bottomleftx + Obstacleset[i].width, Obstacleset[i].bottomlefty};
 		Vec2i topleft = {Obstacleset[i].bottomleftx, Obstacleset[i].bottomlefty + Obstacleset[i].height};
 		Vec2i topright = {Obstacleset[i].bottomleftx + Obstacleset[i].width, Obstacleset[i].bottomlefty + Obstacleset[i].height};
+		std::cout << "point" << bottomleft.x << " " << bottomleft.y << " " << topleft.x << " " << topleft.y << std::endl;
 		bool top = islineinsect(coordinates1_, coordinates2_, topleft, topright);
 		bool bottom = islineinsect(coordinates1_, coordinates2_, bottomleft, bottomright);
 		bool left = islineinsect(coordinates1_, coordinates2_, topleft, bottomleft);
 		bool right = islineinsect(coordinates1_, coordinates2_, topright, bottomright);
+		std::cout << "line" << top << bottom << left << right << std::endl;
 		if (top || bottom || left || right)
 		{
 			return true;
 		}
-		return false;
 	}
+	return false;
 }
 
 bool RRT::RRT::islineinsect(Vec2i line1p1_, Vec2i line1p2_, Vec2i line2p1_, Vec2i line2p2_)
@@ -121,6 +125,8 @@ bool RRT::RRT::isGoal(Vec2i source_, Vec2i goal_)
 bool RRT::RRT::isValid(Vec2i coordinates_, Vec2i closestvertex_) 
 {
 	if (coordinates_.x > 0 && coordinates_.y > 0 
+		&& coordinates_.x < map_width && coordinates_.y < map_height
+		&& closestvertex_.x > 0 && closestvertex_.y > 0 
 		&& closestvertex_.x < map_width && closestvertex_.y < map_height 
 		&& isInObstacle(coordinates_) == false && isInObstacle(closestvertex_) == false
 		&& isHit(coordinates_, closestvertex_) == false)
@@ -278,10 +284,13 @@ void RRT::RRT::smoothpath(Vec2i goal_)
 	smooth_path.push_back(path[0]);
 	int index1 = 0;
 	int index2 = 1;
-	while (index1 <= path.size() && index2 <= path.size())
+	// std::cout << "path size: " << path.size() << std::endl;
+	while (true)
 	{
+		// std::cout << "Index: " << index1 << " " << index2 << std::endl;
 		if (isValid(path[index1], path[index2]) == true)
-		{
+		{	
+			// std::cout << index1 << " " << index2 << " " << std::endl;
 			index2++;
 		}
 		else
@@ -290,10 +299,15 @@ void RRT::RRT::smoothpath(Vec2i goal_)
 			{
 				smooth_path.push_back(path[index2-1]);
 			}
-			index1 = index2;
+			index1 = index2 - 1;
 			index2 = index1 + 1;
 		}
+		if (index1 + 1 ==  path.size() || index2 == path.size())
+		{
+			break;
+		}
 	}
+
 	if (smooth_path.back().x != goal_.x && smooth_path.back().y != goal_.y)
 	{
 		smooth_path.push_back(path.back());
@@ -344,10 +358,12 @@ int main()
 	RRT::Vec2i start, goal;
 	start.x = 10.0;
 	start.y = 10.0;
-	goal.x = 30.0;
-	goal.y = 30.0;
-	RRT::Rectobstacle obstacle1{10,10,15,20};
+	goal.x = 40.0;
+	goal.y = 25.0;
+	RRT::Rectobstacle obstacle1{5,20,15,20};
+	RRT::Rectobstacle obstacle2{5,30,30,0};
 	temp.addobstacle(obstacle1);
+	temp.addobstacle(obstacle2);
 	// std::cout << "obstacle: " << temp.Obstacleset[0].topleftx << " " << temp.Obstacleset[0].toplefty << std::endl;
 
 	temp.findPath(start, goal);
