@@ -20,6 +20,6 @@
 - For [RRT_Goal_Biased]:   
 ![Result](https://github.com/Zhanghq8/Rapidly_Exploring_Random_Tree/blob/master/RRT_GoalBiased/Result/RRT_Goal_Biased.png)   
 - For [RRT_Bi_Directional_Goal_Biased]:   
-![Result](https://github.com/Zhanghq8/Rapidly_Exploring_Random_Tree/blob/master/RRTStar_GoalBiased/Result/RRTStar_Goal_Biased.png) 
+![Result](https://github.com/Zhanghq8/Rapidly_Exploring_Random_Tree/blob/master/RRT_Bi_Directional/Result/RRT_Bi_Directional.png) 
 - For [RRTStar_Goal_Biased]:    
 ![Result](https://github.com/Zhanghq8/Rapidly_Exploring_Random_Tree/blob/master/RRTStar_GoalBiased/Result/RRTStar_Goal_Biased.png)
