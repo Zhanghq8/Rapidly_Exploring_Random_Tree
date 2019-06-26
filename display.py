@@ -22,11 +22,22 @@ ax = plt.gca()
 ax.add_patch(
 	patches.Rectangle(
 		(15, 20),   # (x,y)
-		10,          # width
-		10,          # height
+		5,          # width
+		20,          # height
 		label='Obstacle'
-	)
+	)	
 )
+ax.add_patch(
+	patches.Rectangle(
+		(30, 0),   # (x,y)
+		5,          # width
+		30,          # height
+		label='Obstacle'
+	)	
+)
+
+
+
 
 ax.set_xlim(left=0, right=50)
 ax.set_ylim(bottom=0, top=50)
