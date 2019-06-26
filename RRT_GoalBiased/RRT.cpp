@@ -361,7 +361,7 @@ int main()
 	goal.x = 40.0;
 	goal.y = 25.0;
 	RRT::Rectobstacle obstacle1{5,20,15,20};
-	RRT::Rectobstacle obstacle2{5,20,30,0};
+	RRT::Rectobstacle obstacle2{5,30,30,0};
 	temp.addobstacle(obstacle1);
 	temp.addobstacle(obstacle2);
 	// std::cout << "obstacle: " << temp.Obstacleset[0].topleftx << " " << temp.Obstacleset[0].toplefty << std::endl;
