@@ -8,6 +8,8 @@
 #include <algorithm>
 #include <set>
 #include <limits>
+#include <fstream>
+#include <ostream>
 
 namespace RRT
 {	
@@ -65,6 +67,7 @@ namespace RRT
 		void smoothpath(Vec2i goal_);
 		void setrandompointsize(float randompoint_size_);
 		bool isInObstacle(const Vec2i& coordinates_);
+		void exportpath();
 		bool isGoal(Vec2i source_, Vec2i goal_); // check if the coordinate is at goal pos
 		bool isValid(Vec2i coordinates_, Vec2i closestvertex_); // check if the coordinate is valid
 		float euclidean_dis(Vec2i source_, Vec2i goal_); // calculate the euclidean distance from current to goal
