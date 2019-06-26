@@ -8,6 +8,8 @@
 #include <algorithm>
 #include <set>
 #include <limits>
+#include <fstream>
+#include <ostream>
 
 namespace RRT
 {	
@@ -58,6 +60,7 @@ namespace RRT
 		void setgoalradius(float goal_radius_);
 		void setrandompointsize(float randompoint_size_);
 		void smoothpath(Vec2i goal_);
+		void exportpath();
 		bool isInObstacle(const Vec2i& coordinates_);
 		bool isHit(Vec2i coordinates1_, Vec2i coordinates2_);
 		bool islineinsect(Vec2i line1p1, Vec2i line1p2, Vec2i line2p1, Vec2i line2p2);
