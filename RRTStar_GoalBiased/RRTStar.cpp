@@ -297,6 +297,7 @@ void RRT::RRTStar::findPath(Vec2i source_, Vec2i goal_)
 		std::cout << "\n";
 	}
 	std::cout << "Final cost(after smooth): " << final_cost_s << std::endl;
+	exportpath();
 	releaseVertices(VertexSet);
 }
 
@@ -339,6 +340,38 @@ void RRT::RRTStar::releaseVertices(std::set<Vertex*>& Vertices_)
 		delete *it;
 		it = Vertices_.erase(it);
 	}
+}
+
+void RRT::RRTStar::exportpath()
+{
+	std::ofstream file_path;
+	file_path.open("../path.txt",std::ios::trunc);
+	for (int i=0; i<path.size(); i++)
+	{
+		file_path << path[i].x << " "; 
+	}
+	file_path << "\n";
+	for (int i=0; i<path.size(); i++)
+	{
+		file_path << path[i].y << " "; 
+	}
+	file_path << "\n";
+	file_path.close();
+
+	std::ofstream file_smoothpath;
+	file_smoothpath.open("../smoothpath.txt",std::ios::trunc);
+	for (int i=0; i<smooth_path.size(); i++)
+	{
+		file_smoothpath << smooth_path[i].x << " "; 
+	}
+	file_smoothpath << "\n";
+	for (int i=0; i<smooth_path.size(); i++)
+	{
+		file_smoothpath << smooth_path[i].y << " "; 
+	}
+	file_smoothpath << "\n";
+
+	file_smoothpath.close();
 }
 
 int main()
