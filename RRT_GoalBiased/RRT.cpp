@@ -57,12 +57,12 @@ bool RRT::RRT::isHit(Vec2i coordinates1_, Vec2i coordinates2_)
 		Vec2i bottomright = {Obstacleset[i].bottomleftx + Obstacleset[i].width, Obstacleset[i].bottomlefty};
 		Vec2i topleft = {Obstacleset[i].bottomleftx, Obstacleset[i].bottomlefty + Obstacleset[i].height};
 		Vec2i topright = {Obstacleset[i].bottomleftx + Obstacleset[i].width, Obstacleset[i].bottomlefty + Obstacleset[i].height};
-		std::cout << "point" << bottomleft.x << " " << bottomleft.y << " " << topleft.x << " " << topleft.y << std::endl;
+		// std::cout << "point" << bottomleft.x << " " << bottomleft.y << " " << topleft.x << " " << topleft.y << std::endl;
 		bool top = islineinsect(coordinates1_, coordinates2_, topleft, topright);
 		bool bottom = islineinsect(coordinates1_, coordinates2_, bottomleft, bottomright);
 		bool left = islineinsect(coordinates1_, coordinates2_, topleft, bottomleft);
 		bool right = islineinsect(coordinates1_, coordinates2_, topright, bottomright);
-		std::cout << "line" << top << bottom << left << right << std::endl;
+		// std::cout << "line" << top << bottom << left << right << std::endl;
 		if (top || bottom || left || right)
 		{
 			return true;
@@ -361,7 +361,7 @@ int main()
 	goal.x = 40.0;
 	goal.y = 25.0;
 	RRT::Rectobstacle obstacle1{5,20,15,20};
-	RRT::Rectobstacle obstacle2{5,30,30,0};
+	RRT::Rectobstacle obstacle2{5,20,30,0};
 	temp.addobstacle(obstacle1);
 	temp.addobstacle(obstacle2);
 	// std::cout << "obstacle: " << temp.Obstacleset[0].topleftx << " " << temp.Obstacleset[0].toplefty << std::endl;
