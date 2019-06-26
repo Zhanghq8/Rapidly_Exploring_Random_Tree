@@ -12,4 +12,14 @@
 ## Compile and Run
 - Switch to the right path   
 - g++ -std=c++11 X.h X.cpp -o X   
-- ./X   
+- ./X
+- python display.py   
+
+## Result
+
+- For [RRT_Goal_Biased]:   
+![Result](https://github.com/Zhanghq8/Rapidly_Exploring_Random_Tree/blob/master/RRT_GoalBiased/Result/RRT_Goal_Biased.png)   
+- For [RRT_Bi_Directional_Goal_Biased]:   
+![Result](https://github.com/Zhanghq8/Rapidly_Exploring_Random_Tree/blob/master/RRTStar_GoalBiased/Result/RRTStar_Goal_Biased.png) 
+- For [RRTStar_Goal_Biased]:    
+![Result](https://github.com/Zhanghq8/Rapidly_Exploring_Random_Tree/blob/master/RRTStar_GoalBiased/Result/RRTStar_Goal_Biased.png)
