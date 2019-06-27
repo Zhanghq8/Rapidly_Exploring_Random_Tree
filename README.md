@@ -17,10 +17,14 @@
 
 ## Result
 
-- For [RRT_Goal_Biased]:   
-![Result](https://github.com/Zhanghq8/Rapidly_Exploring_Random_Tree/blob/master/RRT_GoalBiased/Result/RRT_Goal_Biased.png)   
-- For [RRT_Bi_Directional_Goal_Biased]:   
-![Result](https://github.com/Zhanghq8/Rapidly_Exploring_Random_Tree/blob/master/RRT_Bi_Directional/Result/RRT_Bi_Directional.png) 
+- For [RRT_Goal_Biased_minsmooth]:   
+![Result](https://github.com/Zhanghq8/Rapidly_Exploring_Random_Tree/blob/master/RRT_GoalBiased/Result/RRT_Goal_Biased(minsmooth).png)   
+- For [RRT_Goal_Biased_randomsmooth]:   
+![Result](https://github.com/Zhanghq8/Rapidly_Exploring_Random_Tree/blob/master/RRT_GoalBiased/Result/RRT_Goal_Biased(randomsmooth).png)   
+- For [RRT_Bi_Directional_Goal_Biased_minsmooth]:   
+![Result](https://github.com/Zhanghq8/Rapidly_Exploring_Random_Tree/blob/master/RRT_Bi_Directional/Result/RRT_Bi_Directional(minsmooth).png) 
+- For [RRT_Bi_Directional_Goal_Biased_randomsmooth]:   
+![Result](https://github.com/Zhanghq8/Rapidly_Exploring_Random_Tree/blob/master/RRT_Bi_Directional/Result/RRT_Bi_Directional(randomsmooth).png) 
 - For [RRTStar_Goal_Biased_minsmooth]:    
 ![Result](https://github.com/Zhanghq8/Rapidly_Exploring_Random_Tree/blob/master/RRTStar_GoalBiased/Result/RRTStar_Goal_Biased(min).png)
 - For [RRTStar_Goal_Biased_randomsmooth]:    
