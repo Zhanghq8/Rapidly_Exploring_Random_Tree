@@ -247,7 +247,7 @@ void RRT::RRT::findPath(Vec2i source_, Vec2i goal_)
 	}
 	std::cout << "Final cost(without smooth): " << final_cost << std::endl;
 
-	smoothpath(goal_);
+	randomsmoothpath();
 	float final_cost_s = 0;
 	if (!smooth_path.empty()) 
 	{
@@ -275,7 +275,7 @@ void RRT::RRT::releaseVertices(std::set<Vertex*>& Vertices_)
 	}
 }
 
-void RRT::RRT::smoothpath(Vec2i goal_)
+void RRT::RRT::minsmoothpath(Vec2i goal_)
 {	
 	if (path.size() <= 2) {
 		smooth_path = path;
@@ -311,6 +311,33 @@ void RRT::RRT::smoothpath(Vec2i goal_)
 	if (smooth_path.back().x != goal_.x && smooth_path.back().y != goal_.y)
 	{
 		smooth_path.push_back(path.back());
+	}
+}
+
+void RRT::RRT::randomsmoothpath()
+{	
+	smooth_path = path;
+	if (path.size() <= 2) 
+	{
+		return;
+	}
+	int iteration = smooth_path.size() * 1.5;
+
+	for (int i=0; i<iteration; i++)
+	{	
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::uniform_int_distribution<int> x(0, smooth_path.size()-1);
+		std::uniform_int_distribution<int> y(0, smooth_path.size()-1);
+
+		auto index1 = x(gen);
+		auto index2 = y(gen);
+		// std::cout << "index " << index1 << " " << index2 << std::endl;
+		if (isValid(smooth_path[index1], smooth_path[index2]))
+		{
+			smooth_path.erase(smooth_path.begin() + std::min(index1, index2) + 1,
+			 smooth_path.begin() + std::max(index1, index2));
+		}
 	}
 }
 

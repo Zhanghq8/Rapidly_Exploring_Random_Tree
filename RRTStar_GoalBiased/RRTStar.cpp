@@ -372,7 +372,6 @@ void RRT::RRTStar::randomsmoothpath()
 			 smooth_path.begin() + std::max(index1, index2));
 		}
 	}
-
 }
 
 void RRT::RRTStar::releaseVertices(std::set<Vertex*>& Vertices_)

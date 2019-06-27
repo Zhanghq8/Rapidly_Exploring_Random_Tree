@@ -59,7 +59,8 @@ namespace RRT
 		void setmaxiterations(int max_iterations_);
 		void setgoalradius(float goal_radius_);
 		void setrandompointsize(float randompoint_size_);
-		void smoothpath(Vec2i goal_);
+		void minsmoothpath(Vec2i goal_);
+		void randomsmoothpath();
 		void exportpath();
 		bool isInObstacle(const Vec2i& coordinates_);
 		bool isHit(Vec2i coordinates1_, Vec2i coordinates2_);

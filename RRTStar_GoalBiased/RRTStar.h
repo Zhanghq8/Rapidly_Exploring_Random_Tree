@@ -63,7 +63,8 @@ namespace RRT
 		void setmaxiterations(int max_iterations_);
 		void setgoalradius(float goal_radius_);
 		void setrandompointsize(float randompoint_size_);
-		void smoothpath(Vec2i goal_);
+		void minsmoothpath(Vec2i goal_);
+		void randomsmoothpath();
 		void exportpath();
 		bool isHit(Vec2i coordinates1_, Vec2i coordinates2_);
 		bool islineinsect(Vec2i line1p1, Vec2i line1p2, Vec2i line2p1, Vec2i line2p2);
