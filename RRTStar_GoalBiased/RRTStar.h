@@ -55,19 +55,30 @@ namespace RRT
 		
 
 	public:
+		// Set the width and height of map
 		void setmap(float map_width_, float map_height_);
+		// Set the stepsize to connect from current point to randompoint
 		void setstepsize(float step_size_);
+		// Set the probability to generate goal point instead of a random point
 		void setgoalbias(float goal_bias_=7);
+		// Set the near radius when rewiring
 		void setnearradius(float near_radius_=2.5);
+		// Add rectangular obstacle
 		void addobstacle(Rectobstacle obstacle_);
+		// Set the maximum iterations for RRT algorithm
 		void setmaxiterations(int max_iterations_);
+		// Set the bias to check if it is close to goal point
 		void setgoalradius(float goal_radius_);
+		// Set the stepsize to generate random point 
 		void setrandompointsize(float randompoint_size_);
 		void minsmoothpath(Vec2i goal_);
 		void randomsmoothpath();
 		void exportpath();
+		// Check if the line between two points hit the obstacle
 		bool isHit(Vec2i coordinates1_, Vec2i coordinates2_);
-		bool islineinsect(Vec2i line1p1, Vec2i line1p2, Vec2i line2p1, Vec2i line2p2);
+		// Check if two lines have intersecttion 
+		bool islineintersect(Vec2i line1p1, Vec2i line1p2, Vec2i line2p1, Vec2i line2p2);
+		// Check if the point is within the obstacle
 		bool isInObstacle(const Vec2i& coordinates_);
 		bool isGoal(Vec2i source_, Vec2i goal_); // check if the coordinate is at goal pos
 		bool isValid(Vec2i coordinates_, Vec2i closestvertex_); // check if the coordinate is valid

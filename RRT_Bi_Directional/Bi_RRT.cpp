@@ -72,7 +72,7 @@ bool RRT::Bi_RRT::isHit(Vec2i coordinates1_, Vec2i coordinates2_)
 	return false;
 }
 
-bool RRT::Bi_RRT::islineinsect(Vec2i line1p1_, Vec2i line1p2_, Vec2i line2p1_, Vec2i line2p2_)
+bool RRT::Bi_RRT::islineintersect(Vec2i line1p1_, Vec2i line1p2_, Vec2i line2p1_, Vec2i line2p2_)
 {
 	// calculate the distance to intersection point
 	float uA = ((line2p2_.x-line2p1_.x)*(line1p1_.y-line2p1_.y) - (line2p2_.y-line2p1_.y)*
