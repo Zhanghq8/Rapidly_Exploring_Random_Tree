@@ -60,10 +60,10 @@ bool RRT::Bi_RRT::isHit(Vec2i coordinates1_, Vec2i coordinates2_)
 		Vec2i bottomright = {Obstacleset[i].bottomleftx + Obstacleset[i].width, Obstacleset[i].bottomlefty};
 		Vec2i topleft = {Obstacleset[i].bottomleftx, Obstacleset[i].bottomlefty + Obstacleset[i].height};
 		Vec2i topright = {Obstacleset[i].bottomleftx + Obstacleset[i].width, Obstacleset[i].bottomlefty + Obstacleset[i].height};
-		bool top = islineinsect(coordinates1_, coordinates2_, topleft, topright);
-		bool bottom = islineinsect(coordinates1_, coordinates2_, bottomleft, bottomright);
-		bool left = islineinsect(coordinates1_, coordinates2_, topleft, bottomleft);
-		bool right = islineinsect(coordinates1_, coordinates2_, topright, bottomright);
+		bool top = islineintersect(coordinates1_, coordinates2_, topleft, topright);
+		bool bottom = islineintersect(coordinates1_, coordinates2_, bottomleft, bottomright);
+		bool left = islineintersect(coordinates1_, coordinates2_, topleft, bottomleft);
+		bool right = islineintersect(coordinates1_, coordinates2_, topright, bottomright);
 		if (top || bottom || left || right)
 		{
 			return true;
