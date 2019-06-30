@@ -368,8 +368,11 @@ void RRT::RRTStar::randomsmoothpath()
 		// std::cout << "index " << index1 << " " << index2 << std::endl;
 		if (isValid(smooth_path[index1], smooth_path[index2]))
 		{
-			smooth_path.erase(smooth_path.begin() + std::min(index1, index2) + 1,
-			 smooth_path.begin() + std::max(index1, index2));
+			if (abs(index1 - index2) > 1)
+			{
+				smooth_path.erase(smooth_path.begin() + std::min(index1, index2) + 1,
+				 smooth_path.begin() + std::max(index1, index2));				
+			}
 		}
 	}
 }
