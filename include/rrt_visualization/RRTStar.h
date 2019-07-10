@@ -11,7 +11,7 @@
 #include <fstream>
 #include <ostream>
 
-namespace RRT
+namespace RRTStar
 {	
 	// coordinate
 	struct Vec2i
@@ -55,6 +55,7 @@ namespace RRT
 		
 
 	public:
+		RRTStar();
 		// Set the width and height of map
 		void setmap(float map_width_, float map_height_);
 		// Set the stepsize to connect from current point to randompoint

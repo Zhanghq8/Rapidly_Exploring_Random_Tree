@@ -1,5 +1,24 @@
-#include "Bi_RRT.h"
+#include "../include/rrt_visualization/RRT.h"
 
+RRT::RRT::RRT()
+{
+	setmap(50, 50);
+	setstepsize(3.0);
+	setgoalbias(0.07);
+	setrandompointsize(5.0);
+	setgoalradius(1.0);
+	setmaxiterations(10000);
+	Vec2i start, goal;
+	start.x = 10.0;
+	start.y = 10.0;
+	goal.x = 40.0;
+	goal.y = 25.0;
+	Rectobstacle obstacle1{5,20,15,20};
+	Rectobstacle obstacle2{5,30,30,0};
+	addobstacle(obstacle1);
+	addobstacle(obstacle2);
+	findPath(start, goal);
+}
 
 RRT::Vertex::Vertex(Vec2i coordinates_, Vertex *parent_)
 {
@@ -7,63 +26,62 @@ RRT::Vertex::Vertex(Vec2i coordinates_, Vertex *parent_)
 	parent = parent_;
 }
 
-void RRT::Bi_RRT::setmap(float map_width_, float map_height_)
+void RRT::RRT::setmap(float map_width_, float map_height_)
 {
 	map_width = map_width_;
 	map_height = map_height_;
 }
 
-void RRT::Bi_RRT::setgoalbias(float goal_bias_)
+void RRT::RRT::setgoalbias(float goal_bias_)
 {
 	goal_bias = goal_bias_;
 }
 
-void RRT::Bi_RRT::setstepsize(float step_size_)
+void RRT::RRT::setstepsize(float step_size_)
 {
 	step_size = step_size_;
 }
 
-void RRT::Bi_RRT::setmaxiterations(int max_iterations_)
+void RRT::RRT::setmaxiterations(int max_iterations_)
 {
 	max_iterations = max_iterations_;
 }
 
-void RRT::Bi_RRT::setgoalradius(float goal_radius_)
+void RRT::RRT::setgoalradius(float goal_radius_)
 {
 	goal_radius = goal_radius_;
 }
 
-void RRT::Bi_RRT::setrandompointsize(float randompoint_size_)
+void RRT::RRT::setrandompointsize(float randompoint_size_)
 {
 	randompoint_size = randompoint_size_;
 }
 
-void RRT::Bi_RRT::setsearchflag()
-{
-	searchA = true;
-}
-
-void RRT::Bi_RRT::addobstacle(Rectobstacle obstacle_)
+void RRT::RRT::addobstacle(Rectobstacle obstacle_)
 {
 	Obstacleset.push_back(obstacle_);
 }
 
-bool RRT::Bi_RRT::isHit(Vec2i coordinates1_, Vec2i coordinates2_)
+bool RRT::RRT::isHit(Vec2i coordinates1_, Vec2i coordinates2_)
 {	
+	// std::cout << "Found " << Obstacleset.size() << " obstacle. " << std::endl;
 	if (Obstacleset.size() == 0)
 	{
 		return false;
 	}
 	for (int i=0; i<Obstacleset.size(); i++)
 	{	
+		// std::cout << "Obstacle index: " << i << std::endl;	
 		Vec2i bottomleft = {Obstacleset[i].bottomleftx, Obstacleset[i].bottomlefty};
 		Vec2i bottomright = {Obstacleset[i].bottomleftx + Obstacleset[i].width, Obstacleset[i].bottomlefty};
 		Vec2i topleft = {Obstacleset[i].bottomleftx, Obstacleset[i].bottomlefty + Obstacleset[i].height};
 		Vec2i topright = {Obstacleset[i].bottomleftx + Obstacleset[i].width, Obstacleset[i].bottomlefty + Obstacleset[i].height};
+		// std::cout << "point" << bottomleft.x << " " << bottomleft.y << " " << topleft.x << " " << topleft.y << std::endl;
 		bool top = islineintersect(coordinates1_, coordinates2_, topleft, topright);
 		bool bottom = islineintersect(coordinates1_, coordinates2_, bottomleft, bottomright);
 		bool left = islineintersect(coordinates1_, coordinates2_, topleft, bottomleft);
 		bool right = islineintersect(coordinates1_, coordinates2_, topright, bottomright);
+		// std::cout << "line" << top << bottom << left << right << std::endl;
 		if (top || bottom || left || right)
 		{
 			return true;
@@ -72,7 +90,7 @@ bool RRT::Bi_RRT::isHit(Vec2i coordinates1_, Vec2i coordinates2_)
 	return false;
 }
 
-bool RRT::Bi_RRT::islineintersect(Vec2i line1p1_, Vec2i line1p2_, Vec2i line2p1_, Vec2i line2p2_)
+bool RRT::RRT::islineintersect(Vec2i line1p1_, Vec2i line1p2_, Vec2i line2p1_, Vec2i line2p2_)
 {
 	// calculate the distance to intersection point
 	float uA = ((line2p2_.x-line2p1_.x)*(line1p1_.y-line2p1_.y) - (line2p2_.y-line2p1_.y)*
@@ -90,10 +108,8 @@ bool RRT::Bi_RRT::islineintersect(Vec2i line1p1_, Vec2i line1p2_, Vec2i line2p1_
   	return false;
 }
 
-
-
 // check if the coordinate is in all the rectangular obstacles
-bool RRT::Bi_RRT::isInObstacle(const Vec2i& coordinates_)
+bool RRT::RRT::isInObstacle(const Vec2i& coordinates_)
 {
 	if (Obstacleset.size() == 0)
 	{
@@ -113,7 +129,7 @@ bool RRT::Bi_RRT::isInObstacle(const Vec2i& coordinates_)
 }
 
 // check if the coordinate is at goal pos
-bool RRT::Bi_RRT::isGoal(Vec2i source_, Vec2i goal_) 
+bool RRT::RRT::isGoal(Vec2i source_, Vec2i goal_) 
 {
 	float distance = euclidean_dis(source_, goal_);
 	if (distance <= goal_radius) 
@@ -125,7 +141,7 @@ bool RRT::Bi_RRT::isGoal(Vec2i source_, Vec2i goal_)
 
 // check if the coordinate is valid
 
-bool RRT::Bi_RRT::isValid(Vec2i coordinates_, Vec2i closestvertex_) 
+bool RRT::RRT::isValid(Vec2i coordinates_, Vec2i closestvertex_) 
 {
 	if (coordinates_.x > 0 && coordinates_.y > 0 
 		&& coordinates_.x < map_width && coordinates_.y < map_height
@@ -140,14 +156,14 @@ bool RRT::Bi_RRT::isValid(Vec2i coordinates_, Vec2i closestvertex_)
 }
 
 // calculate the euclidean distance from current to goal
-float RRT::Bi_RRT::euclidean_dis(Vec2i source_, Vec2i goal_) 
+float RRT::RRT::euclidean_dis(Vec2i source_, Vec2i goal_) 
 {
 	float e_distance = sqrt(pow(source_.x - goal_.x, 2) + pow(source_.y - goal_.y, 2));
 	return e_distance; 
 }
 
 //generate new randompoint with goal_bias% probability to pick goal point 
-RRT::Vec2i RRT::Bi_RRT::GenerateRandomPoint(Vec2i goal_)
+RRT::Vec2i RRT::RRT::GenerateRandomPoint(Vec2i goal_)
 {
 	Vec2i randompoint;
 	std::random_device rd;
@@ -167,7 +183,7 @@ RRT::Vec2i RRT::Bi_RRT::GenerateRandomPoint(Vec2i goal_)
 	return randompoint;
 }
 
-RRT::Vertex* RRT::Bi_RRT::getClosestVertex(std::set<Vertex*>& Vertices_, Vec2i randompoint_)
+RRT::Vertex* RRT::RRT::getClosestVertex(std::set<Vertex*>& Vertices_, Vec2i randompoint_)
 {	
 	Vertex* closestvertex = NULL;
 	float min_distance = std::numeric_limits<float>::max();
@@ -178,12 +194,11 @@ RRT::Vertex* RRT::Bi_RRT::getClosestVertex(std::set<Vertex*>& Vertices_, Vec2i r
 		}
 	}
 	return closestvertex;
-
 }
 
 //generate new point along the line contain closestvertex and randompoint
 //check if the new point is valid 
-bool RRT::Bi_RRT::extend(Vertex* closestvertex_, Vec2i randompoint_)
+bool RRT::RRT::extend(Vertex* closestvertex_, Vec2i randompoint_)
 {
 	float theta = atan2(randompoint_.y - closestvertex_->coordinates.y, randompoint_.x - closestvertex_->coordinates.x);
 	// std::cout << "theta: " << theta << std::endl;
@@ -193,80 +208,50 @@ bool RRT::Bi_RRT::extend(Vertex* closestvertex_, Vec2i randompoint_)
 	if (isValid(vertextemp, closestvertex_->coordinates) == true) 
 	{	
 		Vertex* newvertex = new Vertex(vertextemp, closestvertex_);
-		if (searchA == true)
-		{
-			current_A = newvertex;
-			VertexSetA.insert(newvertex);
-		}
-		else
-		{
-			current_B = newvertex;
-			VertexSetB.insert(newvertex);
-		}
+		current = newvertex;
+		VertexSet.insert(newvertex);
 		return true;
 	}
 	return false;
 }
 
-void RRT::Bi_RRT::findPath(Vec2i source_, Vec2i goal_)
+void RRT::RRT::findPath(Vec2i source_, Vec2i goal_)
 {	
 	bool done_flag = false;
-	VertexSetA.insert(new Vertex(source_));
-	current_A = *VertexSetA.begin();
-	VertexSetB.insert(new Vertex(goal_));
-	current_B = *VertexSetB.begin();
+	VertexSet.insert(new Vertex(source_));
+	current = *VertexSet.begin();
 	int current_iterations = 0;
 	while (done_flag != true && current_iterations < max_iterations) 
 	{	
 		// std::cout << current_iterations << std::endl;
-		// std::cout << " searchA: " << searchA;
-		Vec2i randompoint;
-		Vertex* closestv;
-		if (searchA == true)
-		{
-			randompoint = GenerateRandomPoint(goal_);
-			closestv= getClosestVertex(VertexSetA, randompoint);
-		}
-		else 
-		{
-			randompoint = GenerateRandomPoint(source_);
-			closestv= getClosestVertex(VertexSetB, randompoint);
-		}
-		// std::cout << " extend: " << extend(closestv, randompoint) << std::endl;
+		Vec2i randompoint = GenerateRandomPoint(goal_);
+		Vertex* closestv= getClosestVertex(VertexSet, randompoint);
 		if (extend(closestv, randompoint) == true)
 		{
-			searchA = ! searchA;
 			current_iterations++;
-			if (isValid(current_A->coordinates, current_B->coordinates) == true 
-				&& euclidean_dis(current_A->coordinates, current_B->coordinates) <= step_size)
+			if (isGoal(current->coordinates, goal_) == true)
 			{
 				done_flag = true;
-				// current_B->parent = current_A;
+				Vertex* goalvertex = new Vertex(goal_, current);
+				current = goalvertex;
 				std::cout << "Found a path ";
 			}
 		}
 		if (current_iterations == max_iterations)
 		{
 			std::cout << "No path found." << std::endl;
-			current_A = NULL;
-			current_B = NULL;
-			releaseVertices(VertexSetA);
-			releaseVertices(VertexSetB);
+			current = NULL;
+			releaseVertices(VertexSet);
 			return;
 		}
 	}
 	
-	while (current_A != NULL) 
+	while (current != NULL) 
 	{
-		path.push_back(current_A->coordinates);
-		current_A = current_A->parent;
+		path.push_back(current->coordinates);
+		current = current->parent;
 	}
 	reverse(path.begin(), path.end());
-	while (current_B != NULL)
-	{
-		path.push_back(current_B->coordinates);
-		current_B = current_B->parent;
-	}
 	float final_cost = 0;
 	if (!path.empty()) 
 	{
@@ -296,11 +281,20 @@ void RRT::Bi_RRT::findPath(Vec2i source_, Vec2i goal_)
 	}
 	std::cout << "Final cost(after smooth): " << final_cost_s << std::endl;
 	exportpath();
-	releaseVertices(VertexSetA);
-	releaseVertices(VertexSetB);
+	releaseVertices(VertexSet);
 }
 
-void RRT::Bi_RRT::minsmoothpath(Vec2i goal_)
+void RRT::RRT::releaseVertices(std::set<Vertex*>& Vertices_)
+{	
+	std::cout << "Visited vertices: " << Vertices_.size() << std::endl;
+	for (auto it = Vertices_.begin(); it != Vertices_.end();) 
+	{
+		delete *it;
+		it = Vertices_.erase(it);
+	}
+}
+
+void RRT::RRT::minsmoothpath(Vec2i goal_)
 {	
 	if (path.size() <= 2) {
 		smooth_path = path;
@@ -339,14 +333,14 @@ void RRT::Bi_RRT::minsmoothpath(Vec2i goal_)
 	}
 }
 
-void RRT::Bi_RRT::randomsmoothpath()
+void RRT::RRT::randomsmoothpath()
 {	
 	smooth_path = path;
 	if (path.size() <= 2) 
 	{
 		return;
 	}
-	int iteration = smooth_path.size() * 2;
+	int iteration = smooth_path.size() * 1.5;
 
 	for (int i=0; i<iteration; i++)
 	{	
@@ -369,7 +363,7 @@ void RRT::Bi_RRT::randomsmoothpath()
 	}
 }
 
-void RRT::Bi_RRT::exportpath()
+void RRT::RRT::exportpath()
 {
 	std::ofstream file_path;
 	file_path.open("../path.txt",std::ios::trunc);
@@ -401,35 +395,25 @@ void RRT::Bi_RRT::exportpath()
 	file_smoothpath.close();
 }
 
-void RRT::Bi_RRT::releaseVertices(std::set<Vertex*>& Vertices_)
-{
-	for (auto it = Vertices_.begin(); it != Vertices_.end();) 
-	{
-		delete *it;
-		it = Vertices_.erase(it);
-	}
-}
+// int main()
+// {
+// 	RRT::RRT temp;
+// 	temp.setmap(50, 50);
+// 	temp.setstepsize(3.0);
+// 	temp.setgoalbias(0.07);
+// 	temp.setrandompointsize(5.0);
+// 	temp.setgoalradius(1.0);
+// 	temp.setmaxiterations(10000);
+// 	RRT::Vec2i start, goal;
+// 	start.x = 10.0;
+// 	start.y = 10.0;
+// 	goal.x = 40.0;
+// 	goal.y = 25.0;
+// 	RRT::Rectobstacle obstacle1{5,20,15,20};
+// 	RRT::Rectobstacle obstacle2{5,30,30,0};
+// 	temp.addobstacle(obstacle1);
+// 	temp.addobstacle(obstacle2);
+// 	// std::cout << "obstacle: " << temp.Obstacleset[0].topleftx << " " << temp.Obstacleset[0].toplefty << std::endl;
 
-int main()
-{
-	RRT::Bi_RRT temp;
-	temp.setmap(50, 50);
-	temp.setsearchflag();
-	temp.setstepsize(3.0);
-	temp.setgoalbias(0.07);
-	temp.setrandompointsize(5.0);
-	temp.setgoalradius(1.0);
-	temp.setmaxiterations(10000);
-	RRT::Vec2i start, goal;
-	start.x = 10.0;
-	start.y = 10.0;
-	goal.x = 40.0;
-	goal.y = 25.0;
-	RRT::Rectobstacle obstacle1{5,20,15,20};
-	RRT::Rectobstacle obstacle2{5,30,30,0};
-	temp.addobstacle(obstacle1);
-	temp.addobstacle(obstacle2);
-	// std::cout << "obstacle: " << temp.Obstacleset[0].topleftx << " " << temp.Obstacleset[0].toplefty << std::endl;
-
-	temp.findPath(start, goal);
-}
+// 	temp.findPath(start, goal);
+// }

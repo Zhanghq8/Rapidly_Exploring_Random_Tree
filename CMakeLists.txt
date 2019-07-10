@@ -3,6 +3,7 @@ project(rrt_visualization)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -197,3 +198,6 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+add_executable(rrt src/main.cpp src/RRTStar.cpp src/RRT.cpp src/Bi_RRT.cpp)
+# target_link_libraries(rrt ${catkin_LIBRARIES})

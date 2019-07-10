@@ -1,49 +1,76 @@
-#include "RRT.h"
+#include "../include/rrt_visualization/RRTStar.h"
+
+RRTStar::RRTStar::RRTStar()
+{
+	setmap(50, 50);
+	setstepsize(3.0);
+	setnearradius(3.5);
+	setgoalbias(0.07);
+	setrandompointsize(5.0);
+	setgoalradius(1.0);
+	setmaxiterations(10000);
+	Vec2i start, goal;
+	start.x = 10.0;
+	start.y = 10.0;
+	goal.x = 40.0;
+	goal.y = 25.0;
+	Rectobstacle obstacle1{5,20,15,20};
+	Rectobstacle obstacle2{5,30,30,0};
+	addobstacle(obstacle1);
+	addobstacle(obstacle2);
+	findPath(start, goal);
+}
 
 
-RRT::Vertex::Vertex(Vec2i coordinates_, Vertex *parent_)
+RRTStar::Vertex::Vertex(Vec2i coordinates_, Vertex *parent_, float cost_)
 {
 	coordinates = coordinates_;
 	parent = parent_;
+	cost = cost_;
 }
 
-void RRT::RRT::setmap(float map_width_, float map_height_)
+void RRTStar::RRTStar::setmap(float map_width_, float map_height_)
 {
 	map_width = map_width_;
 	map_height = map_height_;
 }
 
-void RRT::RRT::setgoalbias(float goal_bias_)
+void RRTStar::RRTStar::setgoalbias(float goal_bias_)
 {
 	goal_bias = goal_bias_;
 }
 
-void RRT::RRT::setstepsize(float step_size_)
+void RRTStar::RRTStar::setstepsize(float step_size_)
 {
 	step_size = step_size_;
 }
 
-void RRT::RRT::setmaxiterations(int max_iterations_)
+void RRTStar::RRTStar::setmaxiterations(int max_iterations_)
 {
 	max_iterations = max_iterations_;
 }
 
-void RRT::RRT::setgoalradius(float goal_radius_)
+void RRTStar::RRTStar::setgoalradius(float goal_radius_)
 {
 	goal_radius = goal_radius_;
 }
 
-void RRT::RRT::setrandompointsize(float randompoint_size_)
+void RRTStar::RRTStar::setnearradius(float near_radius_)
+{
+	near_radius = near_radius_;
+}
+
+void RRTStar::RRTStar::setrandompointsize(float randompoint_size_)
 {
 	randompoint_size = randompoint_size_;
 }
 
-void RRT::RRT::addobstacle(Rectobstacle obstacle_)
+void RRTStar::RRTStar::addobstacle(Rectobstacle obstacle_)
 {
 	Obstacleset.push_back(obstacle_);
 }
 
-bool RRT::RRT::isHit(Vec2i coordinates1_, Vec2i coordinates2_)
+bool RRTStar::RRTStar::isHit(Vec2i coordinates1_, Vec2i coordinates2_)
 {	
 	// std::cout << "Found " << Obstacleset.size() << " obstacle. " << std::endl;
 	if (Obstacleset.size() == 0)
@@ -71,7 +98,8 @@ bool RRT::RRT::isHit(Vec2i coordinates1_, Vec2i coordinates2_)
 	return false;
 }
 
-bool RRT::RRT::islineintersect(Vec2i line1p1_, Vec2i line1p2_, Vec2i line2p1_, Vec2i line2p2_)
+
+bool RRTStar::RRTStar::islineintersect(Vec2i line1p1_, Vec2i line1p2_, Vec2i line2p1_, Vec2i line2p2_)
 {
 	// calculate the distance to intersection point
 	float uA = ((line2p2_.x-line2p1_.x)*(line1p1_.y-line2p1_.y) - (line2p2_.y-line2p1_.y)*
@@ -90,7 +118,7 @@ bool RRT::RRT::islineintersect(Vec2i line1p1_, Vec2i line1p2_, Vec2i line2p1_, V
 }
 
 // check if the coordinate is in all the rectangular obstacles
-bool RRT::RRT::isInObstacle(const Vec2i& coordinates_)
+bool RRTStar::RRTStar::isInObstacle(const Vec2i& coordinates_)
 {
 	if (Obstacleset.size() == 0)
 	{
@@ -110,7 +138,7 @@ bool RRT::RRT::isInObstacle(const Vec2i& coordinates_)
 }
 
 // check if the coordinate is at goal pos
-bool RRT::RRT::isGoal(Vec2i source_, Vec2i goal_) 
+bool RRTStar::RRTStar::isGoal(Vec2i source_, Vec2i goal_) 
 {
 	float distance = euclidean_dis(source_, goal_);
 	if (distance <= goal_radius) 
@@ -122,7 +150,7 @@ bool RRT::RRT::isGoal(Vec2i source_, Vec2i goal_)
 
 // check if the coordinate is valid
 
-bool RRT::RRT::isValid(Vec2i coordinates_, Vec2i closestvertex_) 
+bool RRTStar::RRTStar::isValid(Vec2i coordinates_, Vec2i closestvertex_) 
 {
 	if (coordinates_.x > 0 && coordinates_.y > 0 
 		&& coordinates_.x < map_width && coordinates_.y < map_height
@@ -137,14 +165,14 @@ bool RRT::RRT::isValid(Vec2i coordinates_, Vec2i closestvertex_)
 }
 
 // calculate the euclidean distance from current to goal
-float RRT::RRT::euclidean_dis(Vec2i source_, Vec2i goal_) 
+float RRTStar::RRTStar::euclidean_dis(Vec2i source_, Vec2i goal_) 
 {
 	float e_distance = sqrt(pow(source_.x - goal_.x, 2) + pow(source_.y - goal_.y, 2));
 	return e_distance; 
 }
 
 //generate new randompoint with goal_bias% probability to pick goal point 
-RRT::Vec2i RRT::RRT::GenerateRandomPoint(Vec2i goal_)
+RRTStar::Vec2i RRTStar::RRTStar::GenerateRandomPoint(Vec2i goal_)
 {
 	Vec2i randompoint;
 	std::random_device rd;
@@ -164,7 +192,7 @@ RRT::Vec2i RRT::RRT::GenerateRandomPoint(Vec2i goal_)
 	return randompoint;
 }
 
-RRT::Vertex* RRT::RRT::getClosestVertex(std::set<Vertex*>& Vertices_, Vec2i randompoint_)
+RRTStar::Vertex* RRTStar::RRTStar::getClosestVertex(std::set<Vertex*>& Vertices_, Vec2i randompoint_)
 {	
 	Vertex* closestvertex = NULL;
 	float min_distance = std::numeric_limits<float>::max();
@@ -179,24 +207,59 @@ RRT::Vertex* RRT::RRT::getClosestVertex(std::set<Vertex*>& Vertices_, Vec2i rand
 
 //generate new point along the line contain closestvertex and randompoint
 //check if the new point is valid 
-bool RRT::RRT::extend(Vertex* closestvertex_, Vec2i randompoint_)
+bool RRTStar::RRTStar::extend(Vertex* closestvertex_, Vec2i randompoint_)
 {
 	float theta = atan2(randompoint_.y - closestvertex_->coordinates.y, randompoint_.x - closestvertex_->coordinates.x);
 	// std::cout << "theta: " << theta << std::endl;
 	Vec2i vertextemp;
 	vertextemp.x = closestvertex_->coordinates.x + step_size * cos(theta);
 	vertextemp.y = closestvertex_->coordinates.y + step_size * sin(theta);
+	// std::cout << "isvalid " << isValid(vertextemp, closestvertex_->coordinates) << std::endl;
 	if (isValid(vertextemp, closestvertex_->coordinates) == true) 
 	{	
-		Vertex* newvertex = new Vertex(vertextemp, closestvertex_);
-		current = newvertex;
-		VertexSet.insert(newvertex);
-		return true;
+		Vertex* newparent_ = rewire(VertexSet, vertextemp);
+		// std::cout << "isvalid " << isValid(vertextemp, newparent_->coordinates) << std::endl;
+
+		if (isValid(vertextemp, newparent_->coordinates) == true)
+		{
+			Vertex* newvertex = new Vertex(vertextemp, newparent_, newparent_->cost + step_size);
+			// std::cout << "cost: " << newvertex->cost << std::endl;
+			current = newvertex;
+			VertexSet.insert(newvertex);
+			return true;
+		}	
 	}
 	return false;
 }
 
-void RRT::RRT::findPath(Vec2i source_, Vec2i goal_)
+// Search in Vertices set to find all vertex which the distance to newvertex is less than near radius
+// Find the vertex with minimum cost
+RRTStar::Vertex* RRTStar::RRTStar::rewire(std::set<Vertex*>& Vertices_, Vec2i newvertex_)
+{	
+	std::set<Vertex*> Nearset;
+	Vertex* newparent = NULL;
+	for (auto vertex:Vertices_) 
+	{
+		if (euclidean_dis(vertex->coordinates, newvertex_) <= near_radius) {
+			Nearset.insert(vertex);
+		}
+	}
+	// std::cout << "Nearset size: " << Nearset.size() << std::endl;
+	float mincost = std::numeric_limits<float>::max();
+	for (auto nearvertex:Nearset) 
+	{
+		if (nearvertex->cost < mincost)
+		{
+			mincost = nearvertex->cost;
+			newparent = nearvertex;
+		}
+	}
+	// std::cout << "new parent: " << newparent << std::endl;
+	// std::cout << "Minimum cost: " << mincost << std::endl;
+	return newparent;
+}
+
+void RRTStar::RRTStar::findPath(Vec2i source_, Vec2i goal_)
 {	
 	bool done_flag = false;
 	VertexSet.insert(new Vertex(source_));
@@ -207,6 +270,7 @@ void RRT::RRT::findPath(Vec2i source_, Vec2i goal_)
 		// std::cout << current_iterations << std::endl;
 		Vec2i randompoint = GenerateRandomPoint(goal_);
 		Vertex* closestv= getClosestVertex(VertexSet, randompoint);
+		// std::cout << "Closestv: " << closestv << std::endl;
 		if (extend(closestv, randompoint) == true)
 		{
 			current_iterations++;
@@ -265,17 +329,7 @@ void RRT::RRT::findPath(Vec2i source_, Vec2i goal_)
 	releaseVertices(VertexSet);
 }
 
-void RRT::RRT::releaseVertices(std::set<Vertex*>& Vertices_)
-{	
-	std::cout << "Visited vertices: " << Vertices_.size() << std::endl;
-	for (auto it = Vertices_.begin(); it != Vertices_.end();) 
-	{
-		delete *it;
-		it = Vertices_.erase(it);
-	}
-}
-
-void RRT::RRT::minsmoothpath(Vec2i goal_)
+void RRTStar::RRTStar::minsmoothpath(Vec2i goal_)
 {	
 	if (path.size() <= 2) {
 		smooth_path = path;
@@ -314,7 +368,7 @@ void RRT::RRT::minsmoothpath(Vec2i goal_)
 	}
 }
 
-void RRT::RRT::randomsmoothpath()
+void RRTStar::RRTStar::randomsmoothpath()
 {	
 	smooth_path = path;
 	if (path.size() <= 2) 
@@ -344,7 +398,17 @@ void RRT::RRT::randomsmoothpath()
 	}
 }
 
-void RRT::RRT::exportpath()
+void RRTStar::RRTStar::releaseVertices(std::set<Vertex*>& Vertices_)
+{	
+	std::cout << "Visited vertices: " << Vertices_.size() << std::endl;
+	for (auto it = Vertices_.begin(); it != Vertices_.end();) 
+	{
+		delete *it;
+		it = Vertices_.erase(it);
+	}
+}
+
+void RRTStar::RRTStar::exportpath()
 {
 	std::ofstream file_path;
 	file_path.open("../path.txt",std::ios::trunc);
@@ -376,25 +440,26 @@ void RRT::RRT::exportpath()
 	file_smoothpath.close();
 }
 
-int main()
-{
-	RRT::RRT temp;
-	temp.setmap(50, 50);
-	temp.setstepsize(3.0);
-	temp.setgoalbias(0.07);
-	temp.setrandompointsize(5.0);
-	temp.setgoalradius(1.0);
-	temp.setmaxiterations(10000);
-	RRT::Vec2i start, goal;
-	start.x = 10.0;
-	start.y = 10.0;
-	goal.x = 40.0;
-	goal.y = 25.0;
-	RRT::Rectobstacle obstacle1{5,20,15,20};
-	RRT::Rectobstacle obstacle2{5,30,30,0};
-	temp.addobstacle(obstacle1);
-	temp.addobstacle(obstacle2);
-	// std::cout << "obstacle: " << temp.Obstacleset[0].topleftx << " " << temp.Obstacleset[0].toplefty << std::endl;
+// int main()
+// {
+// 	RRTStar::RRTStar temp;
+// 	temp.setmap(50, 50);
+// 	temp.setstepsize(3.0);
+// 	temp.setnearradius(3.5);
+// 	temp.setgoalbias(0.07);
+// 	temp.setrandompointsize(5.0);
+// 	temp.setgoalradius(1.0);
+// 	temp.setmaxiterations(10000);
+// 	RRT::Vec2i start, goal;
+// 	start.x = 10.0;
+// 	start.y = 10.0;
+// 	goal.x = 40.0;
+// 	goal.y = 25.0;
+// 	RRT::Rectobstacle obstacle1{5,20,15,20};
+// 	RRT::Rectobstacle obstacle2{5,30,30,0};
+// 	temp.addobstacle(obstacle1);
+// 	temp.addobstacle(obstacle2);
+// 	// std::cout << "obstacle: " << temp.Obstacleset[0].topleftx << " " << temp.Obstacleset[0].toplefty << std::endl;
 
-	temp.findPath(start, goal);
-}
+// 	temp.findPath(start, goal);
+// }

@@ -1,5 +1,5 @@
-#ifndef _BI_RRT_H_
-#define _BI_RRT_H_
+#ifndef _RRT_H_
+#define _RRT_H_
 
 #include <vector>
 #include <math.h>
@@ -34,7 +34,7 @@ namespace RRT
 		float bottomlefty; // coordinate of topleft point
 	};
 
-	class Bi_RRT
+	class RRT
 	{
 	private:
 		float map_width;
@@ -45,30 +45,37 @@ namespace RRT
 		int max_iterations;
 		float goal_bias; //with goal_bias% probability to generate goal point 
 		float goal_radius; 
-		bool searchA;
-		Vertex* current_A; // keep track of current vertex of tree A
-		Vertex* current_B; // keep track of current vertex of tree B
+		Vertex* current; // keep track of current vertex
 		std::vector<Vec2i> path; // store the coordinate of the path
 		std::vector<Vec2i> smooth_path; // store the coordinate of the path after smoothed
 		std::vector<Rectobstacle> Obstacleset; 
-		std::set<Vertex*> VertexSetA; // store all the vertice visited for tree A
-		std::set<Vertex*> VertexSetB; // store all the vertice visited for tree B
+		std::set<Vertex*> VertexSet; // store all the vertice visited
 
 	public:
+		RRT();
+		// Set the stepsize to connect from current point to randompoint
 		void setmap(float map_width_, float map_height_);
+		// Set the probability to generate goal point instead of a random point
 		void setstepsize(float step_size_);
+		// Set the probability to generate goal point instead of a random point
 		void setgoalbias(float goal_bias_=7);
+		// Add rectangular obstacle
 		void addobstacle(Rectobstacle obstacle_);
+		// Set the maximum iterations for RRT algorithm
 		void setmaxiterations(int max_iterations_);
+		// Set the bias to check if it is close to goal point
 		void setgoalradius(float goal_radius_);
-		bool isHit(Vec2i coordinates1_, Vec2i coordinates2_);
-		bool islineintersect(Vec2i line1p1, Vec2i line1p2, Vec2i line2p1, Vec2i line2p2);
-		void setsearchflag(); // if set true, search tree A first
+		// Set the stepsize to generate random point 
+		void setrandompointsize(float randompoint_size_);
 		void minsmoothpath(Vec2i goal_);
 		void randomsmoothpath();
-		void setrandompointsize(float randompoint_size_);
-		bool isInObstacle(const Vec2i& coordinates_);
 		void exportpath();
+		// Check if the point is within the obstacle
+		bool isInObstacle(const Vec2i& coordinates_);
+		// Check if the line between two points hit the obstacle
+		bool isHit(Vec2i coordinates1_, Vec2i coordinates2_);
+		// Check if two lines have intersecttion 
+		bool islineintersect(Vec2i line1p1, Vec2i line1p2, Vec2i line2p1, Vec2i line2p2);
 		bool isGoal(Vec2i source_, Vec2i goal_); // check if the coordinate is at goal pos
 		bool isValid(Vec2i coordinates_, Vec2i closestvertex_); // check if the coordinate is valid
 		float euclidean_dis(Vec2i source_, Vec2i goal_); // calculate the euclidean distance from current to goal
