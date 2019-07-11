@@ -9,7 +9,7 @@
 
 int main( int argc, char** argv )
 {
-	ros::init(argc, argv, "points_and_lines");
+	ros::init(argc, argv, "rrt_visualization");
 	ros::NodeHandle n;
 	ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 10);
 
