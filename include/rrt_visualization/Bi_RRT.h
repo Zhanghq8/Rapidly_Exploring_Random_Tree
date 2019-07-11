@@ -37,8 +37,6 @@ namespace Bi_RRT
 	class Bi_RRT
 	{
 	private:
-		float map_width;
-		float map_height; // map size
 		float randompoint_size; //generate new random point from current to next random point 
 		float step_size; //generate new point step_size from closest vertex towards random point
 		int delta;		
@@ -48,14 +46,17 @@ namespace Bi_RRT
 		bool searchA;
 		Vertex* current_A; // keep track of current vertex of tree A
 		Vertex* current_B; // keep track of current vertex of tree B
-		std::vector<Vec2i> path; // store the coordinate of the path
 		std::vector<Vec2i> smooth_path; // store the coordinate of the path after smoothed
-		std::vector<Rectobstacle> Obstacleset; 
 		std::set<Vertex*> VertexSetA; // store all the vertice visited for tree A
 		std::set<Vertex*> VertexSetB; // store all the vertice visited for tree B
 
 	public:
 		Bi_RRT();
+		std::vector<Vec2i> visitednode;
+		float map_width;
+		float map_height; // map size
+		std::vector<Vec2i> path; // store the coordinate of the path
+		std::vector<Rectobstacle> Obstacleset;
 		void setmap(float map_width_, float map_height_);
 		void setstepsize(float step_size_);
 		void setgoalbias(float goal_bias_=7);

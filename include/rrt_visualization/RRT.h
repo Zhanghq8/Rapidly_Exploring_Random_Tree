@@ -37,8 +37,7 @@ namespace RRT
 	class RRT
 	{
 	private:
-		float map_width;
-		float map_height; // map size
+
 		float randompoint_size; //generate new random point from current to next random point 
 		float step_size; //generate new point step_size from closest vertex towards random point
 		int delta;		
@@ -46,13 +45,18 @@ namespace RRT
 		float goal_bias; //with goal_bias% probability to generate goal point 
 		float goal_radius; 
 		Vertex* current; // keep track of current vertex
-		std::vector<Vec2i> path; // store the coordinate of the path
+
 		std::vector<Vec2i> smooth_path; // store the coordinate of the path after smoothed
-		std::vector<Rectobstacle> Obstacleset; 
+ 
 		std::set<Vertex*> VertexSet; // store all the vertice visited
 
 	public:
 		RRT();
+		float map_width;
+		float map_height; // map size
+		std::vector<Vec2i> path; // store the coordinate of the path
+		std::vector<Rectobstacle> Obstacleset;
+		std::vector<Vec2i> visitednode;
 		// Set the stepsize to connect from current point to randompoint
 		void setmap(float map_width_, float map_height_);
 		// Set the probability to generate goal point instead of a random point

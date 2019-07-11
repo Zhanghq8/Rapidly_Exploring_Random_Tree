@@ -212,6 +212,7 @@ bool Bi_RRT::Bi_RRT::extend(Vertex* closestvertex_, Vec2i randompoint_)
 	vertextemp.y = closestvertex_->coordinates.y + step_size * sin(theta);
 	if (isValid(vertextemp, closestvertex_->coordinates) == true) 
 	{	
+		visitednode.push_back(vertextemp);
 		Vertex* newvertex = new Vertex(vertextemp, closestvertex_);
 		if (searchA == true)
 		{
@@ -392,7 +393,7 @@ void Bi_RRT::Bi_RRT::randomsmoothpath()
 void Bi_RRT::Bi_RRT::exportpath()
 {
 	std::ofstream file_path;
-	file_path.open("../path.txt",std::ios::trunc);
+	file_path.open("/home/han/catkin_ws/src/rrt_visualization/path.txt",std::ios::trunc);
 	for (int i=0; i<path.size(); i++)
 	{
 		file_path << path[i].x << " "; 
@@ -406,7 +407,7 @@ void Bi_RRT::Bi_RRT::exportpath()
 	file_path.close();
 
 	std::ofstream file_smoothpath;
-	file_smoothpath.open("../smoothpath.txt",std::ios::trunc);
+	file_smoothpath.open("/home/han/catkin_ws/src/rrt_visualization/smoothpath.txt",std::ios::trunc);
 	for (int i=0; i<smooth_path.size(); i++)
 	{
 		file_smoothpath << smooth_path[i].x << " "; 
