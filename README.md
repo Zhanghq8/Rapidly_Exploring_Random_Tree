@@ -18,11 +18,13 @@
 - Run ```roslaunch rrt_visualization rrt_visualization.launch``` in your teminal.  
 
 ## Result
-- Screenshot   
+- RRT   
 ![Result](https://github.com/Zhanghq8/Rapidly_Exploring_Random_Tree/blob/master/Result/rrt.png)
 - Demo for RRT(https://youtu.be/mlyK3YZZ6NQ)
+- Bi_RRT   
 ![Result](https://github.com/Zhanghq8/Rapidly_Exploring_Random_Tree/blob/master/Result/bi_rrt.png)
 - Demo for Bi_RRT(https://youtu.be/_53SGvVBVWQ)
+- RRT*   
 ![Result](https://github.com/Zhanghq8/Rapidly_Exploring_Random_Tree/blob/master/Result/rrt*.png)
 - Demo for RRTStar(https://youtu.be/nOARlcXThms)
 
