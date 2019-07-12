@@ -255,16 +255,24 @@ void Bi_RRT::Bi_RRT::findPath(Vec2i source_, Vec2i goal_)
 		}
 		// std::cout << " extend: " << extend(closestv, randompoint) << std::endl;
 		if (extend(closestv, randompoint) == true)
-		{
-			searchA = ! searchA;
-			current_iterations++;
-			if (isValid(current_A->coordinates, current_B->coordinates) == true 
-				&& euclidean_dis(current_A->coordinates, current_B->coordinates) <= step_size)
+		{	
+			Vertex* closestvB= getClosestVertex(VertexSetB, current_A->coordinates);
+			Vertex* closestvA= getClosestVertex(VertexSetA, current_B->coordinates);
+			if (searchA == true && isValid(current_A->coordinates, closestvB->coordinates) == true &&
+				euclidean_dis(current_A->coordinates, closestvB->coordinates) <= step_size)
 			{
 				done_flag = true;
-				// current_B->parent = current_A;
+				current_B = closestvB;
 				std::cout << "Found a path ";
 			}
+			if (searchA == false && isValid(current_B->coordinates, closestvA->coordinates) == true &&
+				euclidean_dis(current_B->coordinates, closestvA->coordinates) <= step_size)
+			{
+				done_flag = true;
+				current_A = closestvA;
+				std::cout << "Found a path ";
+			}
+
 		}
 		if (current_iterations == max_iterations)
 		{
