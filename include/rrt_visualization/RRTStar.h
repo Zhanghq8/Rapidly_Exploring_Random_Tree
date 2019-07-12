@@ -46,7 +46,8 @@ namespace RRTStar
 		float goal_bias; //with goal_bias% probability to generate goal point 
 		float goal_radius; 
 		Vertex* current; // keep track of current vertex
-
+		Vertex* goal;
+		bool reach_goal;
 		std::vector<Vec2i> smooth_path; // store the coordinate of the path after smoothed
 		std::set<Vertex*> VertexSet; // store all the vertice visited
 		
@@ -88,8 +89,8 @@ namespace RRTStar
 		float euclidean_dis(Vec2i source_, Vec2i goal_); // calculate the euclidean distance from current to goal
 		Vec2i GenerateRandomPoint(Vec2i goal_); 
 		Vertex* getClosestVertex(std::set<Vertex*>& Vertices_, Vec2i randompoint_);
-		bool extend(Vertex* closertvertex_, Vec2i randompoint_);
-		Vertex* rewire(std::set<Vertex*>& Vertices_, Vec2i newvertex_);
+		bool extend(Vertex* closertvertex_, Vec2i randompoint_, Vec2i goal_);
+		void rewire(Vertex* closestvertex_, Vec2i newvertex_, Vec2i goal_);
 		void findPath(Vec2i source_, Vec2i goal_);
 		void releaseVertices(std::set<Vertex*>& Vertices_);
 

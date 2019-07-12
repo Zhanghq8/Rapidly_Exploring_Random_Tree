@@ -1,14 +1,15 @@
 #include "../include/rrt_visualization/RRTStar.h"
 
 RRTStar::RRTStar::RRTStar()
-{
+{	
+	reach_goal = false;
 	setmap(50, 50);
 	setstepsize(3.0);
-	setnearradius(3.5);
+	setnearradius(5);
 	setgoalbias(0.07);
 	setrandompointsize(5.0);
-	setgoalradius(1.0);
-	setmaxiterations(10000);
+	setgoalradius(3.0);
+	setmaxiterations(5000);
 	Vec2i start, goal;
 	start.x = 10.0;
 	start.y = 10.0;
@@ -207,7 +208,7 @@ RRTStar::Vertex* RRTStar::RRTStar::getClosestVertex(std::set<Vertex*>& Vertices_
 
 //generate new point along the line contain closestvertex and randompoint
 //check if the new point is valid 
-bool RRTStar::RRTStar::extend(Vertex* closestvertex_, Vec2i randompoint_)
+bool RRTStar::RRTStar::extend(Vertex* closestvertex_, Vec2i randompoint_, Vec2i goal_)
 {
 	float theta = atan2(randompoint_.y - closestvertex_->coordinates.y, randompoint_.x - closestvertex_->coordinates.x);
 	// std::cout << "theta: " << theta << std::endl;
@@ -217,85 +218,144 @@ bool RRTStar::RRTStar::extend(Vertex* closestvertex_, Vec2i randompoint_)
 	// std::cout << "isvalid " << isValid(vertextemp, closestvertex_->coordinates) << std::endl;
 	if (isValid(vertextemp, closestvertex_->coordinates) == true) 
 	{	
-		Vertex* newparent_ = rewire(VertexSet, vertextemp);
-		// std::cout << "isvalid " << isValid(vertextemp, newparent_->coordinates) << std::endl;
+		visitednode.push_back(vertextemp);
+		rewire(closestvertex_, vertextemp, goal_);
+		// Vertex* newparent_ = rewire(VertexSet, vertextemp);
+		// // std::cout << "isvalid " << isValid(vertextemp, newparent_->coordinates) << std::endl;
 
-		if (isValid(vertextemp, newparent_->coordinates) == true)
-		{	
-			visitednode.push_back(vertextemp);
-			Vertex* newvertex = new Vertex(vertextemp, newparent_, newparent_->cost + step_size);
-			// std::cout << "cost: " << newvertex->cost << std::endl;
-			current = newvertex;
-			VertexSet.insert(newvertex);
-			return true;
-		}	
+		// if (isValid(vertextemp, newparent_->coordinates) == true)
+		// {	
+		// 	visitednode.push_back(vertextemp);
+		// 	Vertex* newvertex = new Vertex(vertextemp, newparent_, newparent_->cost + step_size);
+		// 	// std::cout << "cost: " << newvertex->cost << std::endl;
+		// 	current = newvertex;
+		// 	VertexSet.insert(newvertex);
+		return true;
+		// }	
 	}
 	return false;
 }
 
 // Search in Vertices set to find all vertex which the distance to newvertex is less than near radius
 // Find the vertex with minimum cost
-RRTStar::Vertex* RRTStar::RRTStar::rewire(std::set<Vertex*>& Vertices_, Vec2i newvertex_)
+void RRTStar::RRTStar::rewire(Vertex* closestvertex_, Vec2i newvertex_, Vec2i goal_)
 {	
+	//find nearby node
 	std::set<Vertex*> Nearset;
-	Vertex* newparent = NULL;
-	for (auto vertex:Vertices_) 
+	for (auto vertex:VertexSet) 
 	{
 		if (euclidean_dis(vertex->coordinates, newvertex_) <= near_radius) {
 			Nearset.insert(vertex);
 		}
 	}
+
+	Vertex* newparent = closestvertex_;
+
 	// std::cout << "Nearset size: " << Nearset.size() << std::endl;
-	float mincost = std::numeric_limits<float>::max();
+	//get parent with minimum cost
+	float mincost = closestvertex_->cost + step_size;
 	for (auto nearvertex:Nearset) 
-	{
-		if (nearvertex->cost < mincost)
+	{	
+		float tempcost = nearvertex->cost + euclidean_dis(nearvertex->coordinates, newvertex_);
+		if (tempcost < mincost && isValid(newvertex_, nearvertex->coordinates))
 		{
-			mincost = nearvertex->cost;
+			mincost = tempcost;
 			newparent = nearvertex;
 		}
 	}
 	// std::cout << "new parent: " << newparent << std::endl;
 	// std::cout << "Minimum cost: " << mincost << std::endl;
-	return newparent;
+
+	// Build edge
+	Vertex* newvertex = new Vertex(newvertex_, newparent, mincost);
+	current = newvertex;
+	if (isGoal(current->coordinates, goal_) == true && reach_goal == false && isValid(current->coordinates, goal_))
+	{
+		goal->parent = current;
+		goal->cost = current->cost + euclidean_dis(current->coordinates, goal->coordinates);
+		reach_goal = true;
+		std::cout << "Found a path. " << std::endl;
+	}
+	if (isGoal(current->coordinates, goal_) == true && reach_goal == true && isValid(current->coordinates, goal_))
+	{	
+		if (current->cost + euclidean_dis(current->coordinates, goal->coordinates) < goal->cost)
+		{
+			goal->parent = current;
+			goal->cost = current->cost + euclidean_dis(current->coordinates, goal->coordinates) < goal->cost;
+		}
+		// std::cout << "Found a path. " << std::endl;
+	}
+	VertexSet.insert(newvertex);
+
+	for (auto nearvertex:Nearset) 
+	{	
+		if (nearvertex != newparent)
+		{
+			if (isValid(nearvertex->coordinates, newvertex->coordinates) && 
+				nearvertex->cost > (newvertex->cost + euclidean_dis(nearvertex->coordinates, newvertex->coordinates)))
+			{
+				nearvertex->parent = newvertex;
+				nearvertex->cost = newvertex->cost + euclidean_dis(nearvertex->coordinates, newvertex->coordinates);
+			}
+		}
+	}
+	// return newparent;
 }
 
 void RRTStar::RRTStar::findPath(Vec2i source_, Vec2i goal_)
 {	
-	bool done_flag = false;
 	VertexSet.insert(new Vertex(source_));
 	current = *VertexSet.begin();
 	int current_iterations = 0;
-	while (done_flag != true && current_iterations < max_iterations) 
+	goal = new Vertex(goal_);
+	while (current_iterations < max_iterations) 
 	{	
 		// std::cout << current_iterations << std::endl;
 		Vec2i randompoint = GenerateRandomPoint(goal_);
 		Vertex* closestv= getClosestVertex(VertexSet, randompoint);
 		// std::cout << "Closestv: " << closestv << std::endl;
-		if (extend(closestv, randompoint) == true)
+		if (extend(closestv, randompoint, goal_) == true)
 		{
 			current_iterations++;
-			if (isGoal(current->coordinates, goal_) == true)
+			// std::cout << current_iterations << std::endl;
+			// std::cout << "Reach goal?" << reach_goal << std::endl;
+			if (reach_goal == true && current_iterations%500 == 0)
 			{
-				done_flag = true;
-				Vertex* goalvertex = new Vertex(goal_, current);
-				current = goalvertex;
-				std::cout << "Found a path ";
+				// Vertex* temp = goal;
+				// while (temp != NULL) 
+				// {
+				// 	path.push_back(temp->coordinates);
+				// 	temp = temp->parent;
+				// }
+				// float final_cost = 0;
+				// reverse(path.begin(), path.end());
+				// if (!path.empty()) 
+				// {
+				// 	std::cout << "with " <<  path.size() << " vertices. " << std::endl;
+				// 	std::cout << "[" << path[0].x << "," << path[0].y << "] ";
+				// 	for (int i=1; i<path.size(); i++)
+				// 	{
+				// 		std::cout << "[" << path[i].x << "," << path[i].y << "] ";
+				// 		final_cost += euclidean_dis(path[i], path[i-1]); 
+				// 	}
+				// 	std::cout << "\n";
+				// }
+				// std::cout << "Final cost(without smooth): " << final_cost << std::endl;
+				// path.clear();
 			}
 		}
 		if (current_iterations == max_iterations)
 		{
-			std::cout << "No path found." << std::endl;
-			current = NULL;
-			releaseVertices(VertexSet);
-			return;
+			std::cout << "Finished." << std::endl;
+			// current = NULL;
+			// releaseVertices(VertexSet);
 		}
 	}
 	
-	while (current != NULL) 
+	while (goal != NULL) 
 	{
-		path.push_back(current->coordinates);
-		current = current->parent;
+		path.push_back(goal->coordinates);
+		goal = goal->parent;
 	}
 	reverse(path.begin(), path.end());
 	float final_cost = 0;
