@@ -6,7 +6,7 @@ RRT::RRT::RRT()
 	setstepsize(3.0);
 	setgoalbias(0.07);
 	setrandompointsize(5.0);
-	setgoalradius(1.0);
+	setgoalradius(3.0);
 	setmaxiterations(10000);
 	Vec2i start, goal;
 	start.x = 10.0;
