@@ -19,6 +19,10 @@
 
 ## Result
 - Screenshot   
-![Result](https://github.com/Zhanghq8/Rapidly_Exploring_Random_Tree/blob/master/Result/rrt_visualization.png)
-- Demo for RRTStar(https://youtu.be/xldECZQHYec)
+![Result](https://github.com/Zhanghq8/Rapidly_Exploring_Random_Tree/blob/master/Result/rrt.png)
+- Demo for RRT(https://youtu.be/mlyK3YZZ6NQ)
+![Result](https://github.com/Zhanghq8/Rapidly_Exploring_Random_Tree/blob/master/Result/bi_rrt.png)
+- Demo for Bi_RRT(https://youtu.be/_53SGvVBVWQ)
+![Result](https://github.com/Zhanghq8/Rapidly_Exploring_Random_Tree/blob/master/Result/rrt*.png)
+- Demo for RRTStar(https://youtu.be/nOARlcXThms)
 
